@@ -91,21 +91,21 @@ p=0
 for i in range(0,len(df)): 
     if i<=(extrems[-1]):
     
-        if i<extrems[p]:
+        if i<extrems[p+1]:
             
-            if df['Extreme'][extrems[p-1]]>df['Extreme'][extrems[p]]:  # We are in rising trend
+            if df['Extreme'][extrems[p-0]]>df['Extreme'][extrems[p+1]]:  # We are in rising trend
             
-                df['Target'][i]=(df['Close'][i]-df['Extreme'][extrems[p]])/abs(df['Extreme'][extrems[p-1]]-df['Extreme'][extrems[p]])
+                df['Target'][i]=(df['Close'][i]-df['Extreme'][extrems[p+1]])/abs(df['Extreme'][extrems[p-0]]-df['Extreme'][extrems[p+1]])
                 
 
             else:   # We are in downward trend
             
-                df['Target'][i]=(df['Close'][i]-df['Extreme'][extrems[p-1]])/abs(df['Extreme'][extrems[p-1]]-df['Extreme'][extrems[p]])
+                df['Target'][i]=(df['Close'][i]-df['Extreme'][extrems[p-0]])/abs(df['Extreme'][extrems[p-0]]-df['Extreme'][extrems[p+1]])
 
 
         else:
             if p<len(extrems):
-                if df['Extreme'][extrems[p-1]]>df['Extreme'][extrems[p]]:
+                if df['Extreme'][extrems[p-0]]>df['Extreme'][extrems[p+1]]:
                     df['Target'][i]=0 
                 else:
                     df['Target'][i]=1
