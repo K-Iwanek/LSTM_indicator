@@ -70,17 +70,47 @@ df['Local_Min']=np.where(df['Min']==df['Close'], df['Close'],0) # Says, when we 
 df['Extreme']=df['Local_Max']+df['Local_Min'] 
 
 
-#### Clearing beginning of the data ####
+#### Cleaning beginning of the data ####
 extrems=df.index[df['Extreme'] != 0].tolist() # List of extrems
-df.drop(df.index[0:extrems[0]], inplace=True) #drop rows, where we dont know extrems
+df.drop(df.index[0:extrems[0]], inplace=True) # Drop rows, where we dont know extrems
 
+#### Dropping unessesery cols ####
+df=df[['Close','Fastema', 'Slowema','Extreme', 'Time']]  
 
 #### Index reset and update of the extrems list ####
 df.dropna(inplace=True)
 df.reset_index(drop=True, inplace=True)
 
-extrems=df.index[df['extremum'] != 0].tolist()
+extrems=df.index[df['Extreme'] != 0].tolist()
 
+
+#### Making Targets ####
+df["Target"]=np.nan
+
+p=0
+for i in range(0,len(df)): 
+    if i<=(extrems[-1]):
+    
+        if i<extrems[p]:
+            
+            if df['Extreme'][extrems[p-1]]>df['Extreme'][extrems[p]]:  # We are in rising trend
+            
+                df['Target'][i]=(df['Close'][i]-df['Extreme'][extrems[p]])/abs(df['Extreme'][extrems[p-1]]-df['Extreme'][extrems[p]])
+                
+
+            else:   # We are in downward trend
+            
+                df['Target'][i]=(df['Close'][i]-df['Extreme'][extrems[p-1]])/abs(df['Extreme'][extrems[p-1]]-df['Extreme'][extrems[p]])
+
+
+        else:
+            if p<len(extrems):
+                if df['Extreme'][extrems[p-1]]>df['Extreme'][extrems[p]]:
+                    df['Target'][i]=0 
+                else:
+                    df['Target'][i]=1
+            
+            p+=1
 
 
         
