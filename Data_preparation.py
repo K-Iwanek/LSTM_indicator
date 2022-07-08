@@ -40,5 +40,50 @@ df['Trend-1']=df['Trend'].shift(periods=1)
 df["Trend_Change"]=df['Trend']-df['Trend-1']  # When Fastema starts to be smaller than Slowema: Trend_Change = -1. When greater: Trend_Change = 1
 
 #### Makeing list of interval's starts
-INTERVAL=df.index[df['Trend_Change'] != 0].tolist()  
-INTERVAL.pop(0) # 1st element is Na
+interval=df.index[df['Trend_Change'] != 0].tolist()  
+interval.pop(0) # 1st element is Na
+
+#### Searching for local Max and Minimus ####
+df["Max"]=np.nan       
+df['Min']=np.nan 
+
+
+if df['Trend_Change'][interval[0]]==1: # We are checking, our data is starting at rising or downward trend
+    start=1 # Rising trend
+else:
+    start=0 # Downward trend
+
+    
+for i in range(0,len(interval)-1):  #Supplement Min and Max cols in intervals
+    if i%2==start:
+        minimums=df['Close'][interval[i]:interval[i+1]] 
+        
+        df["Min"][interval[i]:interval[i+1]]=min(minimums)
+    else:
+        maximus=df['Close'][interval[i]:interval[i+1]]    
+      
+        df["Max"][interval[i]:interval[i+1]]=max(maximus)
+  
+        
+df['Local_Max']=np.where(df['Max']==df['Close'], df['Close'],0) # Says, when we have local Max
+df['Local_Min']=np.where(df['Min']==df['Close'], df['Close'],0) # Says, when we have local Min
+df['Extreme']=df['Local_Max']+df['Local_Min'] 
+
+
+#### Clearing beginning of the data ####
+extrems=df.index[df['Extreme'] != 0].tolist() # List of extrems
+df.drop(df.index[0:extrems[0]], inplace=True) #drop rows, where we dont know extrems
+
+
+#### Index reset and update of the extrems list ####
+df.dropna(inplace=True)
+df.reset_index(drop=True, inplace=True)
+
+extrems=df.index[df['extremum'] != 0].tolist()
+
+
+
+        
+        
+        
+        
